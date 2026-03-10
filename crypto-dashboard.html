@@ -447,6 +447,17 @@
     #toast.show { transform: translateX(-50%) translateY(0); }
     #toast.success { background: #0d2e22; border-color: #1a5a40; color: #6ee7b7; }
 
+    /* ── Privacy mode ── */
+    .port-val, .sum-value, #sum-pl-pct { transition: filter 0.25s; }
+    body.privacy-mode .port-val,
+    body.privacy-mode .sum-value,
+    body.privacy-mode #sum-pl-pct {
+      filter: blur(7px);
+      user-select: none;
+    }
+    #privacy-btn.active { color: #f87171; border-color: #5a2020; background: #2a1010; }
+    #privacy-btn.active:hover { background: #3a1515; }
+
     /* ── Card clickable ── */
     .card { cursor: pointer; }
 
@@ -571,6 +582,11 @@
   </div>
   <div class="header-right">
     <div id="refresh-info">Refreshes in <span id="countdown">60</span>s</div>
+    <button id="privacy-btn" class="header-btn" title="Toggle privacy mode">
+      <svg id="eye-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      <svg id="eye-off-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+      Privacy
+    </button>
     <button id="sync-btn" class="header-btn" title="Sync with Google Sheet">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10"/><path d="M3.51 15a9 9 0 0 0 14.85 3.36L23 14"/></svg>
       Sync Sheet
@@ -731,8 +747,27 @@ function out(data) {
   let priceData    = {};  // { id: { price, change, priceEur } }
   let sheetData    = {};  // { id: { holdings, investedUsd, investedEur } }
   let sheetUrl     = '';
+  let privacyMode  = localStorage.getItem('crypto_dash_privacy') === 'true';
   let countdown    = REFRESH_SEC;
   let searchTimer  = null;
+
+  function applyPrivacy() {
+    document.body.classList.toggle('privacy-mode', privacyMode);
+    document.getElementById('privacy-btn').classList.toggle('active', privacyMode);
+    document.getElementById('eye-icon').style.display     = privacyMode ? 'none'   : '';
+    document.getElementById('eye-off-icon').style.display = privacyMode ? ''       : 'none';
+  }
+
+  document.getElementById('privacy-btn').addEventListener('click', () => {
+    privacyMode = !privacyMode;
+    localStorage.setItem('crypto_dash_privacy', privacyMode);
+    applyPrivacy();
+    // Re-draw chart if open so the avg cost line appears/disappears
+    if (chartCoin && document.getElementById('chart-overlay').classList.contains('open')) {
+      const active = document.querySelector('.range-btn.active');
+      if (active) loadChartRange(chartCoin, active.dataset.days, active.dataset.interval);
+    }
+  });
 
   // ── Helpers ────────────────────────────────────────────────────────────────
   function saveCoins() { localStorage.setItem(STORAGE_COINS, JSON.stringify(trackedCoins.filter(c => !c.fromSheet))); }
@@ -1160,7 +1195,7 @@ function out(data) {
     const avgCostLabelPlugin = {
       id: 'avgCostLabel',
       afterDraw(chart) {
-        if (avgCost === null) return;
+        if (avgCost === null || privacyMode) return;
         const yScale = chart.scales.y;
         const y = yScale.getPixelForValue(avgCost);
         if (y < chart.chartArea.top || y > chart.chartArea.bottom) return;
@@ -1219,7 +1254,7 @@ function out(data) {
       }
     ];
 
-    if (avgCost !== null) {
+    if (avgCost !== null && !privacyMode) {
       datasets.push({
         label: 'Avg Cost',
         data: new Array(values.length).fill(avgCost),
@@ -1431,6 +1466,7 @@ function out(data) {
     sheetUrl     = localStorage.getItem(STORAGE_SHEET) || '';
     trackedCoins = loadCoins();
     updateSyncButton();
+    applyPrivacy();
     renderGrid();
 
     if (sheetUrl) {
