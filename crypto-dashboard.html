@@ -498,7 +498,7 @@
 
     <div class="modal-field">
       <label for="sheet-url-input">Google Sheet URL (share or publish URL)</label>
-      <input id="sheet-url-input" type="url" placeholder="https://docs.google.com/spreadsheets/d/..." />
+      <input id="sheet-url-input" type="text" placeholder="https://docs.google.com/spreadsheets/d/..." />
     </div>
 
     <div class="modal-actions">
@@ -707,7 +707,7 @@
       showToast(`Sheet synced — ${sheetCoinDefs.length} coin(s) loaded.`, true);
     } catch (e) {
       console.error('fetchSheet error', e);
-      showToast('Could not load sheet. Make sure it is published as CSV (File → Share → Publish to web).');
+      showToast(`Sheet error: ${e.message || e}. Make sure it is published as CSV.`);
     } finally {
       syncBtn.classList.remove('spinning');
     }
