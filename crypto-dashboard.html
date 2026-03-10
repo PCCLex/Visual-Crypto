@@ -476,16 +476,36 @@
     <p class="modal-sub">Connect a Google Sheet as your portfolio database. The sheet is the source of truth for which coins are tracked and their holdings.</p>
 
     <div class="steps">
-      <h3>How to set up your sheet</h3>
-      <div class="step"><span class="step-num">1</span><span>Go to <strong>sheets.google.com</strong> and create a new spreadsheet. Name it e.g. <em>Visual Crypto Portfolio</em>.</span></div>
-      <div class="step"><span class="step-num">2</span><span>Add the column headers in row 1 exactly as shown below (copy-paste friendly).</span></div>
-      <div class="step"><span class="step-num">3</span><span>Fill in your coins from row 2. Use the CoinGecko ID (e.g. <code>bitcoin</code>, <code>ethereum</code>, <code>solana</code>).</span></div>
-      <div class="step"><span class="step-num">4</span><span>Go to <strong>File → Share → Publish to web</strong>. Choose <em>Sheet1</em> + <em>Comma-separated values (.csv)</em>. Click <strong>Publish</strong>.</span></div>
-      <div class="step"><span class="step-num">5</span><span>Copy the published URL (or just the regular share URL) and paste it below.</span></div>
+      <h3>One-time setup via Google Apps Script (5 min)</h3>
+      <div class="step"><span class="step-num">1</span><span>Open your Google Sheet → click <strong>Extensions → Apps Script</strong>.</span></div>
+      <div class="step"><span class="step-num">2</span><span>Delete any existing code and paste the script shown below. Click <strong>Save</strong> (💾).</span></div>
+      <div class="step"><span class="step-num">3</span><span>Click <strong>Deploy → New deployment</strong>. Type: <em>Web app</em>. Execute as: <em>Me</em>. Who has access: <em>Anyone</em>. Click <strong>Deploy</strong>.</span></div>
+      <div class="step"><span class="step-num">4</span><span>Copy the <strong>Web app URL</strong> (starts with <code>https://script.google.com/macros/s/…/exec</code>) and paste it below.</span></div>
     </div>
 
     <div class="sheet-columns">
-      <h3>Required column headers (row 1)</h3>
+      <h3>Paste this code in Apps Script (step 2)</h3>
+      <pre id="apps-script-code" style="background:#0a0a1a;color:#a0d0ff;padding:12px;border-radius:8px;font-size:0.75rem;overflow-x:auto;white-space:pre;border:1px solid #1e1e3a;cursor:pointer;position:relative" title="Click to copy">function doGet() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data  = sheet.getDataRange().getValues();
+  if (data.length &lt; 2) return out([]);
+  var headers = data[0].map(function(h) {
+    return String(h).toLowerCase().trim().replace(/\s+/g,'_');
+  });
+  var rows = data.slice(1).map(function(row) {
+    var obj = {};
+    headers.forEach(function(h,i){ obj[h] = row[i]; });
+    return obj;
+  }).filter(function(r){ return r.coin_id; });
+  return out(rows);
+}
+function out(data) {
+  return ContentService.createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}</pre>
+      <small style="color:#4a4a7a">Click the code block to copy it to clipboard.</small>
+      <br><br>
+      <h3 style="margin-top:0">Your sheet column headers (row 1)</h3>
       <div class="col-list">
         <span class="col-tag">coin_id</span>
         <span class="col-tag">name</span>
@@ -497,8 +517,8 @@
     </div>
 
     <div class="modal-field">
-      <label for="sheet-url-input">Google Sheet URL (share or publish URL)</label>
-      <input id="sheet-url-input" type="text" placeholder="https://docs.google.com/spreadsheets/d/..." />
+      <label for="sheet-url-input">Apps Script Web App URL</label>
+      <input id="sheet-url-input" type="text" placeholder="https://script.google.com/macros/s/.../exec" />
     </div>
 
     <div class="modal-actions">
@@ -666,8 +686,9 @@
     try {
       const res = await fetch(sheetUrl);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const csv = await res.text();
-      const rows = parseCSV(csv);
+      // Apps Script returns JSON; fall back to CSV for other URLs
+      const isAppsScript = sheetUrl.includes('script.google.com');
+      const rows = isAppsScript ? await res.json() : parseCSV(await res.text());
 
       // Build sheetData map
       sheetData = {};
@@ -954,6 +975,11 @@
   function closeSettings() {
     document.getElementById('settings-overlay').classList.remove('open');
   }
+
+  document.getElementById('apps-script-code').addEventListener('click', function() {
+    const code = this.textContent;
+    navigator.clipboard.writeText(code).then(() => showToast('Code copied to clipboard!', true));
+  });
 
   document.getElementById('settings-btn').addEventListener('click', openSettings);
   document.getElementById('modal-close-btn').addEventListener('click', closeSettings);
