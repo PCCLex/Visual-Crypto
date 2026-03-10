@@ -597,12 +597,21 @@
   // Convert any Google Sheets URL to a CSV export URL
   function normalizeSheetUrl(url) {
     url = url.trim();
-    const match = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
-    if (!match) return url;
-    const id = match[1];
     const gidMatch = url.match(/[#&?]gid=(\d+)/);
     const gid = gidMatch ? gidMatch[1] : '0';
-    return `https://docs.google.com/spreadsheets/d/${id}/pub?output=csv&gid=${gid}`;
+
+    // Already a CSV export URL — return as-is
+    if (url.includes('/pub?output=csv') || url.includes('&output=csv')) return url;
+
+    // Published HTML URL: .../d/e/LONGID/pubhtml  →  .../d/e/LONGID/pub?output=csv
+    const pubHtmlMatch = url.match(/(https:\/\/docs\.google\.com\/spreadsheets\/d\/e\/[^/]+)\/pubhtml/);
+    if (pubHtmlMatch) return `${pubHtmlMatch[1]}/pub?output=csv&gid=${gid}`;
+
+    // Regular share/edit URL: .../d/SHORTID/edit or /view
+    const shareMatch = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+    if (shareMatch) return `https://docs.google.com/spreadsheets/d/${shareMatch[1]}/pub?output=csv&gid=${gid}`;
+
+    return url; // unrecognised — pass through
   }
 
   // Simple CSV parser (handles quoted fields)
