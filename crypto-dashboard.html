@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Crypto Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -445,6 +446,99 @@
     }
     #toast.show { transform: translateX(-50%) translateY(0); }
     #toast.success { background: #0d2e22; border-color: #1a5a40; color: #6ee7b7; }
+
+    /* ── Card clickable ── */
+    .card { cursor: pointer; }
+
+    /* ── Chart Modal ── */
+    #chart-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 350;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    #chart-overlay.open { display: flex; }
+
+    #chart-modal {
+      background: #1a1a2e;
+      border: 1px solid #2e2e5a;
+      border-radius: 20px;
+      padding: 28px;
+      max-width: 720px;
+      width: 100%;
+      position: relative;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.7);
+    }
+
+    #chart-close {
+      position: absolute;
+      top: 16px; right: 18px;
+      background: none;
+      border: none;
+      color: #5050a0;
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    #chart-close:hover { color: #e0e0f0; }
+
+    #chart-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    #chart-coin-img {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: #2a2a4a;
+    }
+    #chart-coin-name { font-size: 1.2rem; font-weight: 700; color: #e0e0f0; }
+    #chart-coin-sym  { font-size: 0.8rem; color: #6060a0; text-transform: uppercase; }
+    #chart-price-block { margin-left: auto; text-align: right; }
+    #chart-current-price { font-size: 1.4rem; font-weight: 800; color: #e0e0f0; }
+    #chart-change-30d {
+      display: inline-block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 20px;
+      margin-top: 4px;
+    }
+    #chart-change-30d.up   { background: rgba(52,211,153,0.2);  color: #34d399; }
+    #chart-change-30d.down { background: rgba(248,113,113,0.2); color: #f87171; }
+
+    #chart-stats {
+      display: flex;
+      gap: 0;
+      background: #12122a;
+      border: 1px solid #1e1e3a;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .chart-stat {
+      flex: 1;
+      padding: 10px 14px;
+      border-right: 1px solid #1e1e3a;
+    }
+    .chart-stat:last-child { border-right: none; }
+    .chart-stat-label { font-size: 0.68rem; color: #4a4a7a; text-transform: uppercase; letter-spacing: 0.06em; }
+    .chart-stat-val   { font-size: 0.9rem; font-weight: 600; color: #c0c0e0; margin-top: 2px; }
+
+    #chart-loading {
+      text-align: center;
+      color: #4a4a7a;
+      padding: 60px 0;
+      font-size: 0.9rem;
+    }
+
+    #chart-canvas-wrap { position: relative; height: 260px; }
   </style>
 </head>
 <body>
@@ -568,6 +662,37 @@ function out(data) {
 </div>
 
 <div id="toast"></div>
+
+<!-- ── Chart Modal ── -->
+<div id="chart-overlay">
+  <div id="chart-modal">
+    <button id="chart-close">&#10005;</button>
+
+    <div id="chart-header">
+      <img id="chart-coin-img" src="" alt="" />
+      <div>
+        <div id="chart-coin-name"></div>
+        <div id="chart-coin-sym"></div>
+      </div>
+      <div id="chart-price-block">
+        <div id="chart-current-price"></div>
+        <div id="chart-change-30d"></div>
+      </div>
+    </div>
+
+    <div id="chart-stats">
+      <div class="chart-stat"><div class="chart-stat-label">30d High</div><div class="chart-stat-val" id="stat-high">—</div></div>
+      <div class="chart-stat"><div class="chart-stat-label">30d Low</div><div class="chart-stat-val" id="stat-low">—</div></div>
+      <div class="chart-stat"><div class="chart-stat-label">30d Change</div><div class="chart-stat-val" id="stat-chg">—</div></div>
+      <div class="chart-stat"><div class="chart-stat-label">Start Price</div><div class="chart-stat-val" id="stat-start">—</div></div>
+    </div>
+
+    <div id="chart-loading">Loading chart…</div>
+    <div id="chart-canvas-wrap" style="display:none">
+      <canvas id="price-chart"></canvas>
+    </div>
+  </div>
+</div>
 
 <script>
   // ── Constants & State ──────────────────────────────────────────────────────
@@ -859,8 +984,12 @@ function out(data) {
       `;
 
       if (!coin.fromSheet) {
-        card.querySelector('.card-remove').addEventListener('click', () => removeCoin(coin.id));
+        card.querySelector('.card-remove').addEventListener('click', e => {
+          e.stopPropagation();
+          removeCoin(coin.id);
+        });
       }
+      card.addEventListener('click', () => openChart(coin));
       grid.appendChild(card);
     });
   }
@@ -899,6 +1028,142 @@ function out(data) {
     document.getElementById('sum-pl').className             = `sum-value ${plCls}`;
     document.getElementById('sum-pl-pct').textContent       = plPct != null ? `${sign}${plPct.toFixed(2)}% all-time` : '';
   }
+
+  // ── Chart Modal ────────────────────────────────────────────────────────────
+  let chartInstance = null;
+
+  async function openChart(coin) {
+    const overlay = document.getElementById('chart-overlay');
+    overlay.classList.add('open');
+
+    // Header
+    const pd = priceData[coin.id];
+    document.getElementById('chart-coin-img').src = coin.image || '';
+    document.getElementById('chart-coin-name').textContent = coin.name;
+    document.getElementById('chart-coin-sym').textContent = coin.symbol.toUpperCase();
+    document.getElementById('chart-current-price').textContent = pd ? fmt(pd.price) : '—';
+    document.getElementById('chart-change-30d').textContent = '';
+    document.getElementById('chart-change-30d').className = '';
+
+    // Reset stats
+    ['stat-high','stat-low','stat-chg','stat-start'].forEach(id => document.getElementById(id).textContent = '—');
+    document.getElementById('chart-loading').style.display = 'block';
+    document.getElementById('chart-canvas-wrap').style.display = 'none';
+
+    try {
+      const res = await fetch(
+        `https://api.coingecko.com/api/v3/coins/${coin.id}/market_chart?vs_currency=usd&days=30&interval=daily`
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      renderChart(coin, data.prices);
+    } catch (e) {
+      document.getElementById('chart-loading').textContent = 'Failed to load chart data.';
+      console.error('chart error', e);
+    }
+  }
+
+  function renderChart(coin, prices) {
+    const labels = prices.map(p =>
+      new Date(p[0]).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+    );
+    const values = prices.map(p => p[1]);
+
+    const first = values[0];
+    const last  = values[values.length - 1];
+    const high  = Math.max(...values);
+    const low   = Math.min(...values);
+    const chg   = ((last - first) / first) * 100;
+    const isUp  = last >= first;
+
+    // Stats bar
+    document.getElementById('stat-high').textContent  = fmt(high);
+    document.getElementById('stat-low').textContent   = fmt(low);
+    document.getElementById('stat-start').textContent = fmt(first);
+    document.getElementById('stat-chg').textContent   = `${isUp ? '+' : ''}${chg.toFixed(2)}%`;
+    document.getElementById('stat-chg').style.color   = isUp ? '#34d399' : '#f87171';
+
+    // 30d change badge
+    const badge = document.getElementById('chart-change-30d');
+    badge.textContent = `${isUp ? '▲' : '▼'} ${Math.abs(chg).toFixed(2)}% (30d)`;
+    badge.className = isUp ? 'up' : 'down';
+
+    document.getElementById('chart-loading').style.display = 'none';
+    document.getElementById('chart-canvas-wrap').style.display = 'block';
+
+    const ctx = document.getElementById('price-chart').getContext('2d');
+    if (chartInstance) chartInstance.destroy();
+
+    const lineColor = isUp ? '#34d399' : '#f87171';
+    const glowColor = isUp ? 'rgba(52,211,153,' : 'rgba(248,113,113,';
+
+    chartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          data: values,
+          borderColor: lineColor,
+          borderWidth: 2.5,
+          fill: true,
+          backgroundColor: function(ctx) {
+            const chart = ctx.chart;
+            const { chartArea } = chart;
+            if (!chartArea) return 'transparent';
+            const grad = chart.ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+            grad.addColorStop(0, glowColor + '0.35)');
+            grad.addColorStop(1, glowColor + '0)');
+            return grad;
+          },
+          pointRadius: 0,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: lineColor,
+          tension: 0.35,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { intersect: false, mode: 'index' },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#1e1e38',
+            borderColor: '#2e2e5a',
+            borderWidth: 1,
+            titleColor: '#8080b0',
+            bodyColor: '#e0e0f0',
+            bodyFont: { weight: 'bold', size: 13 },
+            callbacks: { label: c => '  ' + fmt(c.parsed.y) }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: { color: '#4a4a7a', maxTicksLimit: 8, font: { size: 11 } },
+            border: { color: '#2a2a4a' }
+          },
+          y: {
+            position: 'right',
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: { color: '#4a4a7a', font: { size: 11 }, callback: v => fmt(v) },
+            border: { color: '#2a2a4a' }
+          }
+        }
+      }
+    });
+  }
+
+  function closeChart() {
+    document.getElementById('chart-overlay').classList.remove('open');
+    if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+  }
+
+  document.getElementById('chart-close').addEventListener('click', closeChart);
+  document.getElementById('chart-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('chart-overlay')) closeChart();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChart(); });
 
   // ── Search & Dropdown ──────────────────────────────────────────────────────
   async function searchCoins(query) {
