@@ -491,8 +491,8 @@
         <span class="col-tag">name</span>
         <span class="col-tag">symbol</span>
         <span class="col-tag">holdings</span>
-        <span class="col-tag">invested_usd</span>
-        <span class="col-tag">invested_eur</span>
+        <span class="col-tag">total_cost</span>
+        <span class="col-tag">invested_eur</span> <small style="color:#5050a0">(optional)</small>
       </div>
     </div>
 
@@ -614,6 +614,26 @@
     return url; // unrecognised — pass through
   }
 
+  // Parse numbers from sheet — handles European format ("0,5" → 0.5) and strips % signs
+  function parseNum(s) {
+    if (!s && s !== 0) return 0;
+    s = String(s).trim().replace(/[%\s]/g, '');
+    if (!s) return 0;
+    // European format: comma as decimal separator (e.g. "0,5" or "1.234,56")
+    if (s.includes(',')) {
+      const lastComma = s.lastIndexOf(',');
+      const lastDot   = s.lastIndexOf('.');
+      if (lastDot === -1 || lastComma > lastDot) {
+        // Comma is the decimal separator → replace dots (thousand sep) then comma
+        s = s.replace(/\./g, '').replace(',', '.');
+      } else {
+        // Dot is the decimal separator → strip commas (thousand sep)
+        s = s.replace(/,/g, '');
+      }
+    }
+    return parseFloat(s) || 0;
+  }
+
   // Simple CSV parser (handles quoted fields)
   function parseCSV(text) {
     const lines = text.trim().split(/\r?\n/);
@@ -657,9 +677,9 @@
         const id = row.coin_id?.toLowerCase().trim();
         if (!id) return;
         sheetData[id] = {
-          holdings:    parseFloat(row.holdings)     || 0,
-          investedUsd: parseFloat(row.invested_usd) || 0,
-          investedEur: parseFloat(row.invested_eur) || 0,
+          holdings:    parseNum(row.holdings),
+          investedUsd: parseNum(row.total_cost ?? row.invested_usd),
+          investedEur: parseNum(row.invested_eur),
         };
         sheetCoinDefs.push({
           id,
