@@ -1,0 +1,101 @@
+rank,name,coin_id,symbol
+1,"Bitcoin",bitcoin,BTC
+2,"Ethereum",ethereum,ETH
+3,"Tether",tether,USDT
+4,"BNB",binancecoin,BNB
+5,"XRP",ripple,XRP
+6,"USDC",usd-coin,USDC
+7,"Solana",solana,SOL
+8,"TRON",tron,TRX
+9,"Figure Heloc",figure-heloc,FIGR_HELOC
+10,"Dogecoin",dogecoin,DOGE
+11,"WhiteBIT Coin",whitebit,WBT
+12,"USDS",usds,USDS
+13,"Cardano",cardano,ADA
+14,"Bitcoin Cash",bitcoin-cash,BCH
+15,"LEO Token",leo-token,LEO
+16,"Hyperliquid",hyperliquid,HYPE
+17,"Monero",monero,XMR
+18,"Chainlink",chainlink,LINK
+19,"Ethena USDe",ethena-usde,USDE
+20,"Canton",canton-network,CC
+21,"Stellar",stellar,XLM
+22,"USD1",usd1-wlfi,USD1
+23,"Rain",rain,RAIN
+24,"Dai",dai,DAI
+25,"Hedera",hedera-hashgraph,HBAR
+26,"Litecoin",litecoin,LTC
+27,"Avalanche",avalanche-2,AVAX
+28,"PayPal USD",paypal-usd,PYUSD
+29,"Sui",sui,SUI
+30,"Zcash",zcash,ZEC
+31,"Shiba Inu",shiba-inu,SHIB
+32,"Toncoin",the-open-network,TON
+33,"Cronos",crypto-com-chain,CRO
+34,"Tether Gold",tether-gold,XAUT
+35,"World Liberty Financial",world-liberty-financial,WLFI
+36,"PAX Gold",pax-gold,PAXG
+37,"MemeCore",memecore,M
+38,"Polkadot",polkadot,DOT
+39,"Uniswap",uniswap,UNI
+40,"Mantle",mantle,MNT
+41,"Pi Network",pi-network,PI
+42,"Circle USYC",hashnote-usyc,USYC
+43,"OKB",okb,OKB
+44,"BlackRock USD Institutional Digital Liquidity Fund",blackrock-usd-institutional-digital-liquidity-fund,BUIDL
+45,"Bittensor",bittensor,TAO
+46,"Sky",sky,SKY
+47,"Falcon USD",falcon-finance,USDF
+48,"Aster",aster-2,ASTER
+49,"Global Dollar",global-dollar,USDG
+50,"Aave",aave,AAVE
+51,"NEAR Protocol",near,NEAR
+52,"Ripple USD",ripple-usd,RLUSD
+53,"Bitget Token",bitget-token,BGB
+54,"HTX DAO",htx-dao,HTX
+55,"Pepe",pepe,PEPE
+56,"Internet Computer",internet-computer,ICP
+57,"BFUSD",bfusd,BFUSD
+58,"Ondo US Dollar Yield",ondo-us-dollar-yield,USDY
+59,"Ethereum Classic",ethereum-classic,ETC
+60,"Ondo",ondo-finance,ONDO
+61,"Pump.fun",pump-fun,PUMP
+62,"Gate",gatechain-token,GT
+63,"Morpho",morpho,MORPHO
+64,"Superstate Short Duration U.S. Government Securities Fund (USTB)",superstate-short-duration-us-government-securities-fund-ustb,USTB
+65,"KuCoin",kucoin-shares,KCS
+66,"Worldcoin",worldcoin-wld,WLD
+67,"POL (ex-MATIC)",polygon-ecosystem-token,POL
+68,"Spiko EU T-Bills Money Market Fund",eutbl,EUTBL
+69,"Quant",quant-network,QNT
+70,"NEXO",nexo,NEXO
+71,"Midnight",midnight-3,NIGHT
+72,"Cosmos Hub",cosmos,ATOM
+73,"Ethena",ethena,ENA
+74,"USDtb",usdtb,USDTB
+75,"Kaspa",kaspa,KAS
+76,"Render",render-token,RENDER
+77,"Flare",flare-networks,FLR
+78,"Algorand",algorand,ALGO
+79,"OUSG",ousg,OUSG
+80,"Provenance Blockchain",hash-2,HASH
+81,"Janus Henderson Anemoy AAA CLO Fund",janus-henderson-anemoy-aaa-clo-fund,JAAA
+82,"Aptos",aptos,APT
+83,"USDD",usdd,USDD
+84,"Official Trump",official-trump,TRUMP
+85,"Filecoin",filecoin,FIL
+86,"XDC Network",xdce-crowd-sale,XDC
+87,"Beldex",beldex,BDX
+88,"VeChain",vechain,VET
+89,"YLDS",ylds,YLDS
+90,"​​Stable",stable-2,STABLE
+91,"Jupiter",jupiter-exchange-solana,JUP
+92,"Arbitrum",arbitrum,ARB
+93,"GHO",gho,GHO
+94,"Janus Henderson Anemoy Treasury Fund",janus-henderson-anemoy-treasury-fund,JTRSY
+95,"Usual USD",usual-usd,USD0
+96,"Bonk",bonk,BONK
+97,"Kite",kite-2,KITE
+98,"Decred",decred,DCR
+99,"TrueUSD",true-usd,TUSD
+100,"A7A5",a7a5,A7A5
