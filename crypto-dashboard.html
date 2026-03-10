@@ -531,6 +531,26 @@
     .chart-stat-label { font-size: 0.68rem; color: #4a4a7a; text-transform: uppercase; letter-spacing: 0.06em; }
     .chart-stat-val   { font-size: 0.9rem; font-weight: 600; color: #c0c0e0; margin-top: 2px; }
 
+    /* ── Chart range buttons ── */
+    #chart-ranges {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .range-btn {
+      background: #12122a;
+      border: 1px solid #2a2a4a;
+      color: #5050a0;
+      border-radius: 8px;
+      padding: 5px 14px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .range-btn:hover  { background: #1e1e3a; color: #a0a0cc; }
+    .range-btn.active { background: #2a1a5a; border-color: #7c3aed; color: #a78bfa; }
+
     #chart-loading {
       text-align: center;
       color: #4a4a7a;
@@ -680,10 +700,17 @@ function out(data) {
       </div>
     </div>
 
+    <div id="chart-ranges">
+      <button class="range-btn" data-days="1"   data-interval="hourly">24h</button>
+      <button class="range-btn" data-days="7"   data-interval="daily">7d</button>
+      <button class="range-btn active" data-days="30"  data-interval="daily">30d</button>
+      <button class="range-btn" data-days="365" data-interval="daily">1y</button>
+    </div>
+
     <div id="chart-stats">
-      <div class="chart-stat"><div class="chart-stat-label">30d High</div><div class="chart-stat-val" id="stat-high">—</div></div>
-      <div class="chart-stat"><div class="chart-stat-label">30d Low</div><div class="chart-stat-val" id="stat-low">—</div></div>
-      <div class="chart-stat"><div class="chart-stat-label">30d Change</div><div class="chart-stat-val" id="stat-chg">—</div></div>
+      <div class="chart-stat"><div class="chart-stat-label" id="stat-high-label">High</div><div class="chart-stat-val" id="stat-high">—</div></div>
+      <div class="chart-stat"><div class="chart-stat-label" id="stat-low-label">Low</div><div class="chart-stat-val" id="stat-low">—</div></div>
+      <div class="chart-stat"><div class="chart-stat-label" id="stat-chg-label">Change</div><div class="chart-stat-val" id="stat-chg">—</div></div>
       <div class="chart-stat"><div class="chart-stat-label">Start Price</div><div class="chart-stat-val" id="stat-start">—</div></div>
     </div>
 
@@ -1031,10 +1058,18 @@ function out(data) {
 
   // ── Chart Modal ────────────────────────────────────────────────────────────
   let chartInstance = null;
+  let chartCoin     = null;
+
+  const RANGES = {
+    '1':   { label: '24h',  interval: 'hourly' },
+    '7':   { label: '7d',   interval: 'daily'  },
+    '30':  { label: '30d',  interval: 'daily'  },
+    '365': { label: '1y',   interval: 'daily'  },
+  };
 
   async function openChart(coin) {
-    const overlay = document.getElementById('chart-overlay');
-    overlay.classList.add('open');
+    chartCoin = coin;
+    document.getElementById('chart-overlay').classList.add('open');
 
     // Header
     const pd = priceData[coin.id];
@@ -1045,28 +1080,46 @@ function out(data) {
     document.getElementById('chart-change-30d').textContent = '';
     document.getElementById('chart-change-30d').className = '';
 
-    // Reset stats
+    // Default to 30d active button
+    setActiveRange(document.querySelector('.range-btn[data-days="30"]'));
+    await loadChartRange(coin, '30', 'daily');
+  }
+
+  function setActiveRange(btn) {
+    document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  async function loadChartRange(coin, days, interval) {
     ['stat-high','stat-low','stat-chg','stat-start'].forEach(id => document.getElementById(id).textContent = '—');
     document.getElementById('chart-loading').style.display = 'block';
     document.getElementById('chart-canvas-wrap').style.display = 'none';
 
+    const rangeLabel = RANGES[days]?.label || `${days}d`;
+    document.getElementById('stat-high-label').textContent = `${rangeLabel} High`;
+    document.getElementById('stat-low-label').textContent  = `${rangeLabel} Low`;
+    document.getElementById('stat-chg-label').textContent  = `${rangeLabel} Change`;
+
     try {
       const res = await fetch(
-        `https://api.coingecko.com/api/v3/coins/${coin.id}/market_chart?vs_currency=usd&days=30&interval=daily`
+        `https://api.coingecko.com/api/v3/coins/${coin.id}/market_chart?vs_currency=usd&days=${days}&interval=${interval}`
       );
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      renderChart(coin, data.prices);
+      renderChart(coin, data.prices, days);
     } catch (e) {
       document.getElementById('chart-loading').textContent = 'Failed to load chart data.';
       console.error('chart error', e);
     }
   }
 
-  function renderChart(coin, prices) {
-    const labels = prices.map(p =>
-      new Date(p[0]).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-    );
+  function renderChart(coin, prices, days) {
+    const labels = prices.map(p => {
+      const d = new Date(p[0]);
+      if (days === '1') return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+      if (days === '365') return d.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' });
+      return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    });
     const values = prices.map(p => p[1]);
 
     const first = values[0];
@@ -1085,7 +1138,7 @@ function out(data) {
 
     // 30d change badge
     const badge = document.getElementById('chart-change-30d');
-    badge.textContent = `${isUp ? '▲' : '▼'} ${Math.abs(chg).toFixed(2)}% (30d)`;
+    badge.textContent = `${isUp ? '▲' : '▼'} ${Math.abs(chg).toFixed(2)}% (${RANGES[days]?.label ?? days + 'd'})`;
     badge.className = isUp ? 'up' : 'down';
 
     document.getElementById('chart-loading').style.display = 'none';
@@ -1164,6 +1217,14 @@ function out(data) {
     if (e.target === document.getElementById('chart-overlay')) closeChart();
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChart(); });
+
+  document.querySelectorAll('.range-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (!chartCoin) return;
+      setActiveRange(btn);
+      loadChartRange(chartCoin, btn.dataset.days, btn.dataset.interval);
+    });
+  });
 
   // ── Search & Dropdown ──────────────────────────────────────────────────────
   async function searchCoins(query) {
