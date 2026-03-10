@@ -1150,30 +1150,93 @@ function out(data) {
     const lineColor = isUp ? '#34d399' : '#f87171';
     const glowColor = isUp ? 'rgba(52,211,153,' : 'rgba(248,113,113,';
 
+    // Average invested cost per coin
+    const sd = sheetData[coin.id];
+    const avgCost = (sd && sd.holdings > 0 && sd.investedUsd > 0)
+      ? sd.investedUsd / sd.holdings
+      : null;
+
+    // Inline plugin: draws the avg cost label on the right Y-axis edge
+    const avgCostLabelPlugin = {
+      id: 'avgCostLabel',
+      afterDraw(chart) {
+        if (avgCost === null) return;
+        const yScale = chart.scales.y;
+        const y = yScale.getPixelForValue(avgCost);
+        if (y < chart.chartArea.top || y > chart.chartArea.bottom) return;
+
+        const c = chart.ctx;
+        const label = fmt(avgCost);
+        c.save();
+        c.font = 'bold 10px "Segoe UI", sans-serif';
+        const tw  = c.measureText(label).width;
+        const pad = 5, h = 16, r = 4;
+        const x   = chart.chartArea.right + 2;
+
+        // Pill background
+        c.fillStyle = '#f59e0b';
+        c.beginPath();
+        c.moveTo(x + r, y - h / 2);
+        c.lineTo(x + tw + pad * 2 - r, y - h / 2);
+        c.quadraticCurveTo(x + tw + pad * 2, y - h / 2, x + tw + pad * 2, y - h / 2 + r);
+        c.lineTo(x + tw + pad * 2, y + h / 2 - r);
+        c.quadraticCurveTo(x + tw + pad * 2, y + h / 2, x + tw + pad * 2 - r, y + h / 2);
+        c.lineTo(x + r, y + h / 2);
+        c.quadraticCurveTo(x, y + h / 2, x, y + h / 2 - r);
+        c.lineTo(x, y - h / 2 + r);
+        c.quadraticCurveTo(x, y - h / 2, x + r, y - h / 2);
+        c.closePath();
+        c.fill();
+
+        // Label text
+        c.fillStyle = '#1a1000';
+        c.textBaseline = 'middle';
+        c.textAlign = 'left';
+        c.fillText(label, x + pad, y);
+        c.restore();
+      }
+    };
+
+    const datasets = [
+      {
+        data: values,
+        borderColor: lineColor,
+        borderWidth: 2.5,
+        fill: true,
+        backgroundColor: function(ctx) {
+          const chart = ctx.chart;
+          const { chartArea } = chart;
+          if (!chartArea) return 'transparent';
+          const grad = chart.ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+          grad.addColorStop(0, glowColor + '0.35)');
+          grad.addColorStop(1, glowColor + '0)');
+          return grad;
+        },
+        pointRadius: 0,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: lineColor,
+        tension: 0.35,
+      }
+    ];
+
+    if (avgCost !== null) {
+      datasets.push({
+        label: 'Avg Cost',
+        data: new Array(values.length).fill(avgCost),
+        borderColor: '#f59e0b',
+        borderWidth: 1.5,
+        borderDash: [6, 4],
+        fill: false,
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        tension: 0,
+      });
+    }
+
     chartInstance = new Chart(ctx, {
       type: 'line',
-      data: {
-        labels,
-        datasets: [{
-          data: values,
-          borderColor: lineColor,
-          borderWidth: 2.5,
-          fill: true,
-          backgroundColor: function(ctx) {
-            const chart = ctx.chart;
-            const { chartArea } = chart;
-            if (!chartArea) return 'transparent';
-            const grad = chart.ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-            grad.addColorStop(0, glowColor + '0.35)');
-            grad.addColorStop(1, glowColor + '0)');
-            return grad;
-          },
-          pointRadius: 0,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: lineColor,
-          tension: 0.35,
-        }]
-      },
+      data: { labels, datasets },
+      plugins: [avgCostLabelPlugin],
       options: {
         responsive: true,
         maintainAspectRatio: false,
@@ -1187,7 +1250,11 @@ function out(data) {
             titleColor: '#8080b0',
             bodyColor: '#e0e0f0',
             bodyFont: { weight: 'bold', size: 13 },
-            callbacks: { label: c => '  ' + fmt(c.parsed.y) }
+            callbacks: {
+              label: c => c.dataset.label === 'Avg Cost'
+                ? `  Avg Cost: ${fmt(c.parsed.y)}`
+                : `  Price: ${fmt(c.parsed.y)}`
+            }
           }
         },
         scales: {
