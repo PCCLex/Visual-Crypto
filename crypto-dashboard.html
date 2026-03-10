@@ -19,7 +19,7 @@
     header {
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
       border-bottom: 1px solid #2a2a4a;
-      padding: 24px 32px;
+      padding: 20px 32px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -37,10 +37,13 @@
       letter-spacing: -0.5px;
     }
 
-    .header-left p {
-      font-size: 0.8rem;
-      color: #6b6b9a;
-      margin-top: 2px;
+    .header-left p { font-size: 0.8rem; color: #6b6b9a; margin-top: 2px; }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     #refresh-info {
@@ -52,16 +55,228 @@
       padding: 6px 16px;
       white-space: nowrap;
     }
+    #refresh-info span { color: #a78bfa; font-weight: 600; }
 
-    #refresh-info span {
-      color: #a78bfa;
-      font-weight: 600;
+    .header-btn {
+      background: #1e1e3a;
+      border: 1px solid #2e2e5a;
+      color: #a0a0cc;
+      border-radius: 10px;
+      padding: 7px 14px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
     }
+    .header-btn:hover { background: #2a2a4a; color: #e0e0f0; border-color: #4a4a7a; }
+
+    #sync-btn { display: none; }
+    #sync-btn.connected { display: flex; color: #34d399; border-color: #1a5a40; background: #0d2e22; }
+    #sync-btn.connected:hover { background: #143d2c; }
+    #sync-btn.spinning svg { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #settings-btn { font-size: 1rem; }
+
+    /* ── Settings Modal ── */
+    #settings-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    #settings-overlay.open { display: flex; }
+
+    #settings-modal {
+      background: #1a1a2e;
+      border: 1px solid #2e2e5a;
+      border-radius: 20px;
+      padding: 32px;
+      max-width: 560px;
+      width: 100%;
+      position: relative;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+    }
+
+    #settings-modal h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #e0e0f0;
+      margin-bottom: 6px;
+    }
+    #settings-modal .modal-sub {
+      font-size: 0.82rem;
+      color: #6060a0;
+      margin-bottom: 24px;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px; right: 18px;
+      background: none;
+      border: none;
+      color: #5050a0;
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .modal-close:hover { color: #e0e0f0; }
+
+    .steps {
+      background: #12122a;
+      border: 1px solid #25254a;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+    .steps h3 { font-size: 0.78rem; color: #6060a0; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+    .step {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-bottom: 8px;
+      font-size: 0.83rem;
+      color: #9090c0;
+      line-height: 1.4;
+    }
+    .step:last-child { margin-bottom: 0; }
+    .step-num {
+      background: #a78bfa22;
+      color: #a78bfa;
+      border-radius: 50%;
+      min-width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+    .step code {
+      background: #1e1e3a;
+      color: #60a5fa;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
+
+    .sheet-columns {
+      background: #12122a;
+      border: 1px solid #25254a;
+      border-radius: 12px;
+      padding: 14px 20px;
+      margin-bottom: 20px;
+    }
+    .sheet-columns h3 { font-size: 0.78rem; color: #6060a0; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+    .col-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .col-tag {
+      background: #1e1e40;
+      border: 1px solid #2e2e5a;
+      color: #a0d0ff;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-family: monospace;
+    }
+
+    .modal-field label {
+      display: block;
+      font-size: 0.82rem;
+      color: #8080b0;
+      margin-bottom: 6px;
+    }
+    #sheet-url-input {
+      width: 100%;
+      padding: 12px 16px;
+      background: #12122a;
+      border: 2px solid #2a2a4a;
+      border-radius: 10px;
+      color: #e0e0f0;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    #sheet-url-input::placeholder { color: #3a3a6a; }
+    #sheet-url-input:focus { border-color: #a78bfa; }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .btn-primary {
+      flex: 1;
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      border: none;
+      color: #fff;
+      border-radius: 10px;
+      padding: 11px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-danger {
+      background: #2a1010;
+      border: 1px solid #5a2020;
+      color: #f87171;
+      border-radius: 10px;
+      padding: 11px 18px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-danger:hover { background: #3a1515; }
+
+    /* ── Portfolio Summary ── */
+    #portfolio-summary {
+      max-width: 900px;
+      margin: 24px auto 0;
+      padding: 0 24px;
+      display: none;
+    }
+    #portfolio-summary.visible { display: block; }
+
+    .summary-bar {
+      background: linear-gradient(135deg, #1a1a2e, #1e1a3a);
+      border: 1px solid #2a2a4a;
+      border-radius: 16px;
+      padding: 16px 24px;
+      display: flex;
+      gap: 0;
+      flex-wrap: wrap;
+    }
+
+    .summary-item {
+      flex: 1;
+      min-width: 120px;
+      padding: 4px 16px;
+      border-right: 1px solid #2a2a4a;
+    }
+    .summary-item:first-child { padding-left: 0; }
+    .summary-item:last-child  { border-right: none; padding-right: 0; }
+
+    .sum-label { font-size: 0.72rem; color: #5050a0; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 4px; }
+    .sum-value { font-size: 1.1rem; font-weight: 700; color: #e0e0f0; }
+    .sum-value.positive { color: #34d399; }
+    .sum-value.negative { color: #f87171; }
+    .sum-sub   { font-size: 0.75rem; color: #6060a0; margin-top: 2px; }
 
     /* ── Search ── */
     .search-wrapper {
       max-width: 560px;
-      margin: 32px auto 0;
+      margin: 24px auto 0;
       padding: 0 24px;
       position: relative;
     }
@@ -77,24 +292,13 @@
       outline: none;
       transition: border-color 0.2s;
     }
-
     #search-input::placeholder { color: #4a4a6a; }
-
-    #search-input:focus {
-      border-color: #a78bfa;
-      box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.15);
-    }
-
-    #search-input:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    #search-input:focus { border-color: #a78bfa; box-shadow: 0 0 0 3px rgba(167,139,250,0.15); }
 
     #dropdown {
       position: absolute;
       top: calc(100% + 6px);
-      left: 24px;
-      right: 24px;
+      left: 24px; right: 24px;
       background: #1e1e38;
       border: 1px solid #2e2e5a;
       border-radius: 12px;
@@ -103,7 +307,6 @@
       box-shadow: 0 12px 40px rgba(0,0,0,0.5);
       display: none;
     }
-
     .dropdown-item {
       display: flex;
       align-items: center;
@@ -112,39 +315,24 @@
       cursor: pointer;
       transition: background 0.15s;
     }
-
     .dropdown-item:hover { background: #2a2a4a; }
-
-    .dropdown-item img {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-    }
-
+    .dropdown-item img { width: 28px; height: 28px; border-radius: 50%; }
     .dropdown-item .di-name { font-size: 0.9rem; color: #d0d0f0; }
     .dropdown-item .di-sym  { font-size: 0.75rem; color: #7070a0; margin-left: 4px; text-transform: uppercase; }
-
-    .dropdown-item .di-added {
-      margin-left: auto;
-      font-size: 0.7rem;
-      color: #4a4a6a;
-      background: #14142a;
-      padding: 2px 8px;
-      border-radius: 10px;
-    }
+    .dropdown-item .di-added { margin-left: auto; font-size: 0.7rem; color: #4a4a6a; background: #14142a; padding: 2px 8px; border-radius: 10px; }
 
     /* ── Grid ── */
     #grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 20px;
       max-width: 1200px;
-      margin: 28px auto 0;
+      margin: 24px auto 0;
       padding: 0 24px;
     }
 
-    /* ── Card gradients (8 colours rotating) ── */
-    .card { --g1: #7c3aed; --g2: #4f46e5; }
+    /* ── Card gradients ── */
+    .card            { --g1: #7c3aed; --g2: #4f46e5; }
     .card[data-ci="1"] { --g1: #db2777; --g2: #7c3aed; }
     .card[data-ci="2"] { --g1: #0891b2; --g2: #2563eb; }
     .card[data-ci="3"] { --g1: #059669; --g2: #0891b2; }
@@ -162,7 +350,6 @@
       transition: transform 0.2s, box-shadow 0.2s;
       overflow: hidden;
     }
-
     .card::before {
       content: '';
       position: absolute;
@@ -171,57 +358,31 @@
       border-radius: inherit;
       pointer-events: none;
     }
-
-    .card:hover {
-      transform: translateY(-4px) scale(1.01);
-      box-shadow: 0 10px 36px rgba(0,0,0,0.5);
-    }
+    .card:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 10px 36px rgba(0,0,0,0.5); }
 
     .card-remove {
       position: absolute;
-      top: 10px;
-      right: 12px;
+      top: 10px; right: 12px;
       background: rgba(0,0,0,0.3);
       border: none;
       color: rgba(255,255,255,0.7);
-      width: 26px;
-      height: 26px;
+      width: 26px; height: 26px;
       border-radius: 50%;
       cursor: pointer;
       font-size: 1rem;
-      line-height: 1;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: background 0.15s, color 0.15s;
     }
-
     .card-remove:hover { background: rgba(220,50,50,0.7); color: #fff; }
 
-    .card-top {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
+    .card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .card-top img { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.15); }
+    .card-top .coin-name { font-size: 1rem; font-weight: 700; color: #fff; line-height: 1.2; }
+    .card-top .coin-sym  { font-size: 0.72rem; color: rgba(255,255,255,0.65); text-transform: uppercase; }
 
-    .card-top img {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.15);
-    }
-
-    .card-top .coin-name  { font-size: 1rem; font-weight: 700; color: #fff; line-height: 1.2; }
-    .card-top .coin-sym   { font-size: 0.72rem; color: rgba(255,255,255,0.65); text-transform: uppercase; }
-
-    .card-price {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: #fff;
-      letter-spacing: -0.5px;
-      margin-bottom: 8px;
-    }
+    .card-price { font-size: 1.5rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; margin-bottom: 8px; }
 
     .card-change {
       display: inline-flex;
@@ -232,16 +393,29 @@
       padding: 3px 10px;
       border-radius: 20px;
     }
-
     .card-change.up   { background: rgba(52,211,153,0.25); color: #6ee7b7; }
     .card-change.down { background: rgba(248,113,113,0.25); color: #fca5a5; }
     .card-change.flat { background: rgba(255,255,255,0.1);  color: rgba(255,255,255,0.7); }
 
-    .card-loading {
-      font-size: 0.8rem;
-      color: rgba(255,255,255,0.5);
-      margin-top: 8px;
+    /* ── Card portfolio section ── */
+    .card-divider {
+      height: 1px;
+      background: rgba(255,255,255,0.15);
+      margin: 14px 0;
     }
+
+    .card-portfolio { display: flex; flex-direction: column; gap: 6px; }
+
+    .port-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .port-label { font-size: 0.72rem; color: rgba(255,255,255,0.55); white-space: nowrap; }
+    .port-val   { font-size: 0.82rem; font-weight: 600; color: rgba(255,255,255,0.9); text-align: right; }
+    .port-val.positive { color: #6ee7b7; }
+    .port-val.negative { color: #fca5a5; }
 
     /* ── Empty state ── */
     #empty-state {
@@ -250,11 +424,10 @@
       margin-top: 80px;
       display: none;
     }
-
     #empty-state svg { opacity: 0.4; margin-bottom: 16px; }
-    #empty-state p   { font-size: 1rem; }
+    #empty-state p { font-size: 1rem; }
 
-    /* ── Error toast ── */
+    /* ── Toast ── */
     #toast {
       position: fixed;
       bottom: 24px;
@@ -267,109 +440,364 @@
       border-radius: 10px;
       font-size: 0.85rem;
       transition: transform 0.3s;
-      z-index: 200;
+      z-index: 400;
+      white-space: nowrap;
     }
-
     #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.success { background: #0d2e22; border-color: #1a5a40; color: #6ee7b7; }
   </style>
 </head>
 <body>
 
+<!-- ── Header ── -->
 <header>
   <div class="header-left">
     <h1>&#9728; Crypto Dashboard</h1>
     <p>Live prices powered by CoinGecko</p>
   </div>
-  <div id="refresh-info">Refreshes in <span id="countdown">60</span>s</div>
+  <div class="header-right">
+    <div id="refresh-info">Refreshes in <span id="countdown">60</span>s</div>
+    <button id="sync-btn" class="header-btn" title="Sync with Google Sheet">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10"/><path d="M3.51 15a9 9 0 0 0 14.85 3.36L23 14"/></svg>
+      Sync Sheet
+    </button>
+    <button id="settings-btn" class="header-btn" title="Google Sheet settings">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Google Sheet
+    </button>
+  </div>
 </header>
 
+<!-- ── Settings Modal ── -->
+<div id="settings-overlay">
+  <div id="settings-modal">
+    <button class="modal-close" id="modal-close-btn">&#10005;</button>
+    <h2>&#128202; Google Sheet Integration</h2>
+    <p class="modal-sub">Connect a Google Sheet as your portfolio database. The sheet is the source of truth for which coins are tracked and their holdings.</p>
+
+    <div class="steps">
+      <h3>How to set up your sheet</h3>
+      <div class="step"><span class="step-num">1</span><span>Go to <strong>sheets.google.com</strong> and create a new spreadsheet. Name it e.g. <em>Visual Crypto Portfolio</em>.</span></div>
+      <div class="step"><span class="step-num">2</span><span>Add the column headers in row 1 exactly as shown below (copy-paste friendly).</span></div>
+      <div class="step"><span class="step-num">3</span><span>Fill in your coins from row 2. Use the CoinGecko ID (e.g. <code>bitcoin</code>, <code>ethereum</code>, <code>solana</code>).</span></div>
+      <div class="step"><span class="step-num">4</span><span>Go to <strong>File → Share → Publish to web</strong>. Choose <em>Sheet1</em> + <em>Comma-separated values (.csv)</em>. Click <strong>Publish</strong>.</span></div>
+      <div class="step"><span class="step-num">5</span><span>Copy the published URL (or just the regular share URL) and paste it below.</span></div>
+    </div>
+
+    <div class="sheet-columns">
+      <h3>Required column headers (row 1)</h3>
+      <div class="col-list">
+        <span class="col-tag">coin_id</span>
+        <span class="col-tag">name</span>
+        <span class="col-tag">symbol</span>
+        <span class="col-tag">holdings</span>
+        <span class="col-tag">invested_usd</span>
+        <span class="col-tag">invested_eur</span>
+      </div>
+    </div>
+
+    <div class="modal-field">
+      <label for="sheet-url-input">Google Sheet URL (share or publish URL)</label>
+      <input id="sheet-url-input" type="url" placeholder="https://docs.google.com/spreadsheets/d/..." />
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-primary" id="save-sheet-btn">Connect Sheet</button>
+      <button class="btn-danger" id="clear-sheet-btn">Disconnect</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Portfolio Summary ── -->
+<div id="portfolio-summary">
+  <div class="summary-bar">
+    <div class="summary-item">
+      <div class="sum-label">Portfolio Value</div>
+      <div class="sum-value" id="sum-value">—</div>
+    </div>
+    <div class="summary-item">
+      <div class="sum-label">Invested (USD)</div>
+      <div class="sum-value" id="sum-invested-usd">—</div>
+    </div>
+    <div class="summary-item">
+      <div class="sum-label">Invested (EUR)</div>
+      <div class="sum-value" id="sum-invested-eur">—</div>
+    </div>
+    <div class="summary-item">
+      <div class="sum-label">P&amp;L (USD)</div>
+      <div class="sum-value" id="sum-pl">—</div>
+      <div class="sum-sub"  id="sum-pl-pct"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Search ── -->
 <div class="search-wrapper">
-  <input id="search-input" type="text" placeholder="Search for a coin (e.g. Bitcoin)..." autocomplete="off" />
+  <input id="search-input" type="text" placeholder="Search to add a coin manually (e.g. Bitcoin)..." autocomplete="off" />
   <div id="dropdown"></div>
 </div>
 
+<!-- ── Grid ── -->
 <div id="grid"></div>
 
 <div id="empty-state">
   <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
     <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
   </svg>
-  <p>Search for a coin above to get started.</p>
+  <p>Connect a Google Sheet or search for a coin above to get started.</p>
 </div>
 
 <div id="toast"></div>
 
 <script>
-  // ── State ──────────────────────────────────────────────────────────────────
-  const STORAGE_KEY = 'crypto_dashboard_coins';
-  const REFRESH_INTERVAL = 60; // seconds
+  // ── Constants & State ──────────────────────────────────────────────────────
+  const STORAGE_COINS   = 'crypto_dash_coins';
+  const STORAGE_SHEET   = 'crypto_dash_sheet_url';
+  const REFRESH_SEC     = 60;
 
-  let trackedCoins = [];   // [{ id, name, symbol, image }]
-  let priceData    = {};   // { id: { price, change } }
-  let countdown    = REFRESH_INTERVAL;
+  let trackedCoins = [];  // [{ id, name, symbol, image, fromSheet }]
+  let priceData    = {};  // { id: { price, change, priceEur } }
+  let sheetData    = {};  // { id: { holdings, investedUsd, investedEur } }
+  let sheetUrl     = '';
+  let countdown    = REFRESH_SEC;
   let searchTimer  = null;
 
   // ── Helpers ────────────────────────────────────────────────────────────────
-  function save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(trackedCoins));
+  function saveCoins() { localStorage.setItem(STORAGE_COINS, JSON.stringify(trackedCoins.filter(c => !c.fromSheet))); }
+  function saveSheet() { localStorage.setItem(STORAGE_SHEET, sheetUrl); }
+
+  function loadCoins() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_COINS) || '[]'); } catch { return []; }
   }
 
-  function load() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch { return []; }
+  function fmt(n, prefix = '$') {
+    if (n === null || n === undefined || isNaN(n)) return '—';
+    const abs = Math.abs(n);
+    if (abs >= 1000) return prefix + n.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (abs >= 1)    return prefix + n.toFixed(4);
+    return prefix + n.toPrecision(4);
+  }
+  function fmtEur(n)  { return fmt(n, '€'); }
+  function fmtNum(n)  {
+    if (!n && n !== 0) return '—';
+    if (n >= 1e9) return (n/1e9).toFixed(2) + 'B';
+    if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+    if (n >= 1e3) return (n/1e3).toFixed(2) + 'K';
+    return n.toPrecision(6).replace(/\.?0+$/, '');
   }
 
-  function formatPrice(n) {
-    if (n === null || n === undefined) return '—';
-    if (n >= 1000) return '$' + n.toLocaleString('en-US', { maximumFractionDigits: 2 });
-    if (n >= 1)    return '$' + n.toFixed(4);
-    return '$' + n.toPrecision(4);
-  }
-
-  function showToast(msg) {
+  function showToast(msg, success = false) {
     const t = document.getElementById('toast');
     t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
+    t.className = 'show' + (success ? ' success' : '');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.className = '', 3500);
   }
 
-  // ── Rendering ──────────────────────────────────────────────────────────────
+  // Convert any Google Sheets URL to a CSV export URL
+  function normalizeSheetUrl(url) {
+    url = url.trim();
+    const match = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+    if (!match) return url;
+    const id = match[1];
+    const gidMatch = url.match(/[#&?]gid=(\d+)/);
+    const gid = gidMatch ? gidMatch[1] : '0';
+    return `https://docs.google.com/spreadsheets/d/${id}/pub?output=csv&gid=${gid}`;
+  }
+
+  // Simple CSV parser (handles quoted fields)
+  function parseCSV(text) {
+    const lines = text.trim().split(/\r?\n/);
+    if (lines.length < 2) return [];
+    const headers = splitCSVLine(lines[0]).map(h => h.toLowerCase().trim());
+    return lines.slice(1).map(line => {
+      const vals = splitCSVLine(line);
+      return Object.fromEntries(headers.map((h, i) => [h, (vals[i] || '').trim()]));
+    }).filter(row => row.coin_id);
+  }
+
+  function splitCSVLine(line) {
+    const cols = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      if (line[i] === '"') { inQ = !inQ; }
+      else if (line[i] === ',' && !inQ) { cols.push(cur); cur = ''; }
+      else { cur += line[i]; }
+    }
+    cols.push(cur);
+    return cols;
+  }
+
+  // ── Google Sheet Fetch ─────────────────────────────────────────────────────
+  async function fetchSheet() {
+    if (!sheetUrl) return;
+    const syncBtn = document.getElementById('sync-btn');
+    syncBtn.classList.add('spinning');
+
+    try {
+      const res = await fetch(sheetUrl);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const csv = await res.text();
+      const rows = parseCSV(csv);
+
+      // Build sheetData map
+      sheetData = {};
+      const sheetCoinDefs = [];
+
+      rows.forEach(row => {
+        const id = row.coin_id?.toLowerCase().trim();
+        if (!id) return;
+        sheetData[id] = {
+          holdings:    parseFloat(row.holdings)     || 0,
+          investedUsd: parseFloat(row.invested_usd) || 0,
+          investedEur: parseFloat(row.invested_eur) || 0,
+        };
+        sheetCoinDefs.push({
+          id,
+          name:      row.name   || id,
+          symbol:    row.symbol || '',
+          image:     '',
+          fromSheet: true,
+        });
+      });
+
+      // Merge: keep manual coins, replace/add sheet coins
+      const manual = trackedCoins.filter(c => !c.fromSheet);
+      // Preserve existing image data for sheet coins
+      trackedCoins = [
+        ...sheetCoinDefs.map(sc => {
+          const existing = trackedCoins.find(c => c.id === sc.id);
+          return existing ? { ...existing, fromSheet: true } : sc;
+        }),
+        ...manual.filter(m => !sheetData[m.id]),
+      ];
+
+      saveCoins();
+      renderGrid();
+      await fetchPrices();
+      showToast(`Sheet synced — ${sheetCoinDefs.length} coin(s) loaded.`, true);
+    } catch (e) {
+      console.error('fetchSheet error', e);
+      showToast('Could not load sheet. Make sure it is published as CSV (File → Share → Publish to web).');
+    } finally {
+      syncBtn.classList.remove('spinning');
+    }
+  }
+
+  // ── Price Fetch ────────────────────────────────────────────────────────────
+  async function fetchPrices() {
+    if (trackedCoins.length === 0) return;
+    const ids = trackedCoins.map(c => c.id).join(',');
+    const hasSheet = Object.keys(sheetData).length > 0;
+
+    try {
+      // Fetch USD prices (always)
+      const [usdRes, eurRes] = await Promise.all([
+        fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&sparkline=false`),
+        hasSheet
+          ? fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&ids=${ids}&sparkline=false`)
+          : Promise.resolve(null),
+      ]);
+
+      if (!usdRes.ok) throw new Error(`HTTP ${usdRes.status}`);
+      const usdData = await usdRes.json();
+
+      usdData.forEach(coin => {
+        if (!priceData[coin.id]) priceData[coin.id] = {};
+        priceData[coin.id].price  = coin.current_price;
+        priceData[coin.id].change = coin.price_change_percentage_24h;
+        priceData[coin.id].image  = coin.image;
+        // Update image in trackedCoins
+        const tc = trackedCoins.find(c => c.id === coin.id);
+        if (tc && coin.image) tc.image = coin.image;
+      });
+
+      if (eurRes && eurRes.ok) {
+        const eurData = await eurRes.json();
+        eurData.forEach(coin => {
+          if (!priceData[coin.id]) priceData[coin.id] = {};
+          priceData[coin.id].priceEur = coin.current_price;
+        });
+      }
+
+      renderGrid();
+      updatePortfolioSummary();
+    } catch (e) {
+      console.error('fetchPrices error', e);
+      showToast('Failed to fetch prices. Check your connection.');
+    }
+  }
+
+  // ── Render Grid ────────────────────────────────────────────────────────────
   function renderGrid() {
-    const grid   = document.getElementById('grid');
-    const empty  = document.getElementById('empty-state');
+    const grid  = document.getElementById('grid');
+    const empty = document.getElementById('empty-state');
     grid.innerHTML = '';
 
-    if (trackedCoins.length === 0) {
-      empty.style.display = 'block';
-      return;
-    }
+    if (trackedCoins.length === 0) { empty.style.display = 'block'; return; }
     empty.style.display = 'none';
 
     trackedCoins.forEach((coin, idx) => {
-      const ci    = idx % 8;
-      const pd    = priceData[coin.id];
-      const price = pd ? formatPrice(pd.price) : '…';
+      const ci  = idx % 8;
+      const pd  = priceData[coin.id];
+      const sd  = sheetData[coin.id];
+      const price = pd ? fmt(pd.price) : '…';
       const chg   = pd ? pd.change : null;
 
+      // 24h change badge
       let chgHtml;
-      if (chg === null || chg === undefined) {
-        chgHtml = '<span class="card-change flat">— %</span>';
-      } else if (chg >= 0) {
-        chgHtml = `<span class="card-change up">&#9650; ${chg.toFixed(2)}%</span>`;
-      } else {
-        chgHtml = `<span class="card-change down">&#9660; ${Math.abs(chg).toFixed(2)}%</span>`;
+      if (chg == null)   chgHtml = '<span class="card-change flat">— %</span>';
+      else if (chg >= 0) chgHtml = `<span class="card-change up">&#9650; ${chg.toFixed(2)}%</span>`;
+      else               chgHtml = `<span class="card-change down">&#9660; ${Math.abs(chg).toFixed(2)}%</span>`;
+
+      // Portfolio section
+      let portfolioHtml = '';
+      if (sd && pd) {
+        const valueUsd = sd.holdings * pd.price;
+        const valueEur = sd.holdings * (pd.priceEur || 0);
+        const plUsd    = valueUsd - sd.investedUsd;
+        const plPct    = sd.investedUsd > 0 ? (plUsd / sd.investedUsd * 100) : null;
+        const plClass  = plUsd >= 0 ? 'positive' : 'negative';
+        const plSign   = plUsd >= 0 ? '+' : '';
+        const holdingsLine = sd.holdings > 0
+          ? `${fmtNum(sd.holdings)} ${coin.symbol.toUpperCase()} = ${fmt(valueUsd)}`
+          : '—';
+        const investedLine = (sd.investedUsd || sd.investedEur)
+          ? `${sd.investedUsd > 0 ? fmt(sd.investedUsd) : '—'} / ${sd.investedEur > 0 ? fmtEur(sd.investedEur) : '—'}`
+          : '—';
+        const plLine = sd.investedUsd > 0
+          ? `${plSign}${fmt(plUsd)} ${plPct != null ? `(${plSign}${plPct.toFixed(1)}%)` : ''}`
+          : '—';
+        const eurLine = sd.holdings > 0 && pd.priceEur
+          ? fmtEur(valueEur)
+          : '';
+
+        portfolioHtml = `
+          <div class="card-divider"></div>
+          <div class="card-portfolio">
+            <div class="port-row"><span class="port-label">Holdings</span><span class="port-val">${holdingsLine}</span></div>
+            ${eurLine ? `<div class="port-row"><span class="port-label">Value (EUR)</span><span class="port-val">${eurLine}</span></div>` : ''}
+            <div class="port-row"><span class="port-label">Invested</span><span class="port-val">${investedLine}</span></div>
+            <div class="port-row"><span class="port-label">P&amp;L</span><span class="port-val ${plClass}">${plLine}</span></div>
+          </div>`;
       }
 
       const card = document.createElement('div');
       card.className = 'card';
-      card.dataset.ci  = ci;
-      card.dataset.id  = coin.id;
+      card.dataset.ci = ci;
+      card.dataset.id = coin.id;
+
+      const removeBtn = coin.fromSheet
+        ? '' // sheet coins can't be removed via dashboard
+        : `<button class="card-remove" title="Remove">&#10005;</button>`;
+
+      const fallbackImg = `data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 36 36%22><circle cx=%2218%22 cy=%2218%22 r=%2218%22 fill=%22rgba(255,255,255,.2)%22/></svg>`;
+
       card.innerHTML = `
-        <button class="card-remove" title="Remove">&#10005;</button>
+        ${removeBtn}
         <div class="card-top">
-          <img src="${coin.image || ''}" alt="${coin.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 36 36%22><circle cx=%2218%22 cy=%2218%22 r=%2218%22 fill=%22rgba(255,255,255,.2)%22/></svg>'"/>
+          <img src="${coin.image || fallbackImg}" alt="${coin.name}"
+               onerror="this.src='${fallbackImg}'"/>
           <div>
             <div class="coin-name">${coin.name}</div>
             <div class="coin-sym">${coin.symbol}</div>
@@ -377,118 +805,92 @@
         </div>
         <div class="card-price">${price}</div>
         ${chgHtml}
+        ${portfolioHtml}
       `;
 
-      card.querySelector('.card-remove').addEventListener('click', () => removeCoin(coin.id));
+      if (!coin.fromSheet) {
+        card.querySelector('.card-remove').addEventListener('click', () => removeCoin(coin.id));
+      }
       grid.appendChild(card);
     });
   }
 
-  function updatePricesInCards() {
-    document.querySelectorAll('#grid .card').forEach(card => {
-      const id  = card.dataset.id;
-      const pd  = priceData[id];
-      if (!pd) return;
+  // ── Portfolio Summary ──────────────────────────────────────────────────────
+  function updatePortfolioSummary() {
+    const hasSheet = Object.keys(sheetData).length > 0;
+    const summary  = document.getElementById('portfolio-summary');
 
-      card.querySelector('.card-price').textContent = formatPrice(pd.price);
+    if (!hasSheet) { summary.classList.remove('visible'); return; }
+    summary.classList.add('visible');
 
-      const chg = pd.change;
-      let chgEl = card.querySelector('.card-change');
-      if (!chgEl) {
-        chgEl = document.createElement('span');
-        card.appendChild(chgEl);
-      }
+    let totalValueUsd = 0, totalInvUsd = 0, totalInvEur = 0;
+    let hasData = false;
 
-      if (chg === null || chg === undefined) {
-        chgEl.className = 'card-change flat';
-        chgEl.innerHTML = '— %';
-      } else if (chg >= 0) {
-        chgEl.className = 'card-change up';
-        chgEl.innerHTML = `&#9650; ${chg.toFixed(2)}%`;
-      } else {
-        chgEl.className = 'card-change down';
-        chgEl.innerHTML = `&#9660; ${Math.abs(chg).toFixed(2)}%`;
-      }
+    Object.entries(sheetData).forEach(([id, sd]) => {
+      const pd = priceData[id];
+      if (!pd || !sd.holdings) return;
+      totalValueUsd += sd.holdings * pd.price;
+      totalInvUsd   += sd.investedUsd;
+      totalInvEur   += sd.investedEur;
+      hasData = true;
     });
+
+    if (!hasData) return;
+
+    const pl    = totalValueUsd - totalInvUsd;
+    const plPct = totalInvUsd > 0 ? (pl / totalInvUsd * 100) : null;
+    const plCls = pl >= 0 ? 'positive' : 'negative';
+    const sign  = pl >= 0 ? '+' : '';
+
+    document.getElementById('sum-value').textContent       = fmt(totalValueUsd);
+    document.getElementById('sum-invested-usd').textContent = fmt(totalInvUsd);
+    document.getElementById('sum-invested-eur').textContent = fmtEur(totalInvEur);
+    document.getElementById('sum-pl').textContent           = `${sign}${fmt(pl)}`;
+    document.getElementById('sum-pl').className             = `sum-value ${plCls}`;
+    document.getElementById('sum-pl-pct').textContent       = plPct != null ? `${sign}${plPct.toFixed(2)}% all-time` : '';
   }
 
-  // ── API calls ──────────────────────────────────────────────────────────────
-  async function fetchPrices() {
-    if (trackedCoins.length === 0) return;
-    const ids = trackedCoins.map(c => c.id).join(',');
-    try {
-      const res = await fetch(
-        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&sparkline=false`
-      );
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      data.forEach(coin => {
-        priceData[coin.id] = {
-          price:  coin.current_price,
-          change: coin.price_change_percentage_24h
-        };
-      });
-      updatePricesInCards();
-    } catch (e) {
-      console.error('fetchPrices error', e);
-      showToast('Failed to fetch prices. Check your connection.');
-    }
-  }
-
+  // ── Search & Dropdown ──────────────────────────────────────────────────────
   async function searchCoins(query) {
     if (!query.trim()) { closeDropdown(); return; }
     try {
       const res  = await fetch(`https://api.coingecko.com/api/v3/search?query=${encodeURIComponent(query)}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error();
       const data = await res.json();
       renderDropdown(data.coins.slice(0, 8));
-    } catch (e) {
-      console.error('searchCoins error', e);
-    }
+    } catch { /* silent */ }
   }
 
-  // ── Dropdown ───────────────────────────────────────────────────────────────
   function renderDropdown(coins) {
     const dd = document.getElementById('dropdown');
-    if (coins.length === 0) { closeDropdown(); return; }
-
+    if (!coins.length) { closeDropdown(); return; }
     dd.innerHTML = '';
     coins.forEach(coin => {
-      const alreadyAdded = trackedCoins.some(c => c.id === coin.id);
-      const item = document.createElement('div');
+      const added = trackedCoins.some(c => c.id === coin.id);
+      const item  = document.createElement('div');
       item.className = 'dropdown-item';
       item.innerHTML = `
         <img src="${coin.thumb || ''}" alt="${coin.name}" onerror="this.style.visibility='hidden'"/>
         <span class="di-name">${coin.name}</span>
         <span class="di-sym">${coin.symbol}</span>
-        ${alreadyAdded ? '<span class="di-added">Added</span>' : ''}
+        ${added ? '<span class="di-added">Added</span>' : ''}
       `;
-      if (!alreadyAdded) {
-        item.addEventListener('click', () => addCoin(coin));
-      }
+      if (!added) item.addEventListener('click', () => addCoin(coin));
       dd.appendChild(item);
     });
-
     dd.style.display = 'block';
   }
 
-  function closeDropdown() {
-    document.getElementById('dropdown').style.display = 'none';
-  }
+  function closeDropdown() { document.getElementById('dropdown').style.display = 'none'; }
 
-  // ── Coin management ────────────────────────────────────────────────────────
+  // ── Coin Management ────────────────────────────────────────────────────────
   function addCoin(coin) {
     if (trackedCoins.some(c => c.id === coin.id)) return;
-
-    // CoinGecko search returns `thumb`; we want a larger image.
-    // The large image URL pattern: replace /thumb/ with /small/ or just use thumb.
-    const image = (coin.large || coin.small || coin.thumb || '');
-
-    trackedCoins.push({ id: coin.id, name: coin.name, symbol: coin.symbol, image });
-    save();
+    const image = coin.large || coin.small || coin.thumb || '';
+    trackedCoins.push({ id: coin.id, name: coin.name, symbol: coin.symbol, image, fromSheet: false });
+    saveCoins();
     renderGrid();
     fetchPrices();
-
     document.getElementById('search-input').value = '';
     closeDropdown();
   }
@@ -496,30 +898,71 @@
   function removeCoin(id) {
     trackedCoins = trackedCoins.filter(c => c.id !== id);
     delete priceData[id];
-    save();
+    saveCoins();
     renderGrid();
+    updatePortfolioSummary();
   }
 
-  // ── Auto-refresh ───────────────────────────────────────────────────────────
+  // ── Auto Refresh ───────────────────────────────────────────────────────────
   function startAutoRefresh() {
-    countdown = REFRESH_INTERVAL;
-    updateCountdown();
-
+    countdown = REFRESH_SEC;
     setInterval(async () => {
       countdown--;
       if (countdown <= 0) {
-        countdown = REFRESH_INTERVAL;
-        await fetchPrices();
+        countdown = REFRESH_SEC;
+        if (sheetUrl) await fetchSheet();
+        else await fetchPrices();
       }
-      updateCountdown();
+      document.getElementById('countdown').textContent = countdown;
     }, 1000);
   }
 
-  function updateCountdown() {
-    document.getElementById('countdown').textContent = countdown;
+  // ── Settings Modal ─────────────────────────────────────────────────────────
+  function openSettings() {
+    document.getElementById('sheet-url-input').value = sheetUrl;
+    document.getElementById('settings-overlay').classList.add('open');
+  }
+  function closeSettings() {
+    document.getElementById('settings-overlay').classList.remove('open');
   }
 
-  // ── Search input handling ──────────────────────────────────────────────────
+  document.getElementById('settings-btn').addEventListener('click', openSettings);
+  document.getElementById('modal-close-btn').addEventListener('click', closeSettings);
+  document.getElementById('settings-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('settings-overlay')) closeSettings();
+  });
+
+  document.getElementById('save-sheet-btn').addEventListener('click', async () => {
+    const raw = document.getElementById('sheet-url-input').value.trim();
+    if (!raw) { showToast('Please enter a Google Sheet URL.'); return; }
+    sheetUrl = normalizeSheetUrl(raw);
+    saveSheet();
+    updateSyncButton();
+    closeSettings();
+    await fetchSheet();
+  });
+
+  document.getElementById('clear-sheet-btn').addEventListener('click', () => {
+    sheetUrl = '';
+    sheetData = {};
+    localStorage.removeItem(STORAGE_SHEET);
+    trackedCoins = trackedCoins.filter(c => !c.fromSheet);
+    updateSyncButton();
+    closeSettings();
+    renderGrid();
+    updatePortfolioSummary();
+    showToast('Google Sheet disconnected.');
+  });
+
+  document.getElementById('sync-btn').addEventListener('click', () => fetchSheet());
+
+  function updateSyncButton() {
+    const btn = document.getElementById('sync-btn');
+    if (sheetUrl) btn.classList.add('connected');
+    else          btn.classList.remove('connected');
+  }
+
+  // ── Search Listeners ───────────────────────────────────────────────────────
   document.getElementById('search-input').addEventListener('input', e => {
     clearTimeout(searchTimer);
     const q = e.target.value.trim();
@@ -532,14 +975,22 @@
   });
 
   document.getElementById('search-input').addEventListener('keydown', e => {
-    if (e.key === 'Escape') { closeDropdown(); }
+    if (e.key === 'Escape') closeDropdown();
   });
 
   // ── Init ───────────────────────────────────────────────────────────────────
   (async function init() {
-    trackedCoins = load();
+    sheetUrl     = localStorage.getItem(STORAGE_SHEET) || '';
+    trackedCoins = loadCoins();
+    updateSyncButton();
     renderGrid();
-    if (trackedCoins.length > 0) await fetchPrices();
+
+    if (sheetUrl) {
+      await fetchSheet();      // also calls fetchPrices() internally
+    } else if (trackedCoins.length > 0) {
+      await fetchPrices();
+    }
+
     startAutoRefresh();
   })();
 </script>
