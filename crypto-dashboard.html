@@ -20,7 +20,7 @@
     header {
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
       border-bottom: 1px solid #2a2a4a;
-      padding: 20px 32px;
+      padding: 20px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -242,9 +242,8 @@
 
     /* ── Portfolio Summary ── */
     #portfolio-summary {
-      max-width: 900px;
-      margin: 24px auto 0;
-      padding: 0 24px;
+      margin: 24px 0 0;
+      padding: 0 16px;
       display: none;
     }
     #portfolio-summary.visible { display: block; }
@@ -276,9 +275,9 @@
 
     /* ── Search ── */
     .search-wrapper {
-      max-width: 560px;
+      max-width: 600px;
       margin: 24px auto 0;
-      padding: 0 24px;
+      padding: 0 16px;
       position: relative;
     }
 
@@ -325,11 +324,10 @@
     /* ── Grid ── */
     #grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
-      max-width: 1200px;
-      margin: 24px auto 0;
-      padding: 0 24px;
+      grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+      gap: 16px;
+      margin: 20px 0 0;
+      padding: 0 16px;
     }
 
     /* ── Card gradients ── */
@@ -457,6 +455,23 @@
     }
     #privacy-btn.active { color: #f87171; border-color: #5a2020; background: #2a1010; }
     #privacy-btn.active:hover { background: #3a1515; }
+
+    /* ── Responsive breakpoints ── */
+    @media (max-width: 600px) {
+      header { padding: 14px 16px; }
+      .header-left h1 { font-size: 1.4rem; }
+      .header-btn span, .header-btn { font-size: 0.78rem; padding: 6px 10px; }
+      #grid { padding: 0 10px; gap: 12px; }
+      #portfolio-summary { padding: 0 10px; }
+      .summary-bar { flex-direction: column; gap: 0; }
+      .summary-item { border-right: none; border-bottom: 1px solid #2a2a4a; padding: 10px 16px; }
+      .summary-item:last-child { border-bottom: none; }
+      .search-wrapper { padding: 0 10px; }
+    }
+
+    @media (min-width: 1800px) {
+      #grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; }
+    }
 
     /* ── Card clickable ── */
     .card { cursor: pointer; }
